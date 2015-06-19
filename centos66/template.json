@@ -5,7 +5,12 @@
     "mirror": "http://ftp.riken.jp/Linux/centos",
     "box_output_dir": "../boxes",
     "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
-    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "aws_region": "",
+    "aws_vpc_id": "",
+    "aws_subnet_id": "",
+    "aws_ami_id": "",
+    "aws_instance_role": ""
   },
   "builders": [
     {
@@ -14,6 +19,7 @@
       "boot_wait": "10s",
       "disk_size": 512000,
       "guest_os_type": "RedHat_64",
+      "output_directory": "packer-centos-{{user `centos_version`}}-x86_64-{{.Provider}}",
       "iso_checksum": "eb3c8be6ab668e6d83a118323a789e6c",
       "iso_checksum_type": "md5",
       "iso_url": "{{user `mirror`}}/6/isos/x86_64/CentOS-{{user `centos_version`}}-x86_64-minimal.iso",
@@ -59,6 +65,34 @@
       "vpc_id": "{{user `aws_vpc_id`}}",
       "subnet_id": "{{user `aws_subnet_id`}}",
       "ami_name": "CentOS{{user `centos_version`}}_{{isotime \"20060102\" | clean_ami_name }}_v{{user `box_version`}}"
+    },
+    {
+      "type": "vmware-iso",
+      "version": 11,
+      "vm_name": "CentOS{{user `centos_version`}}_PackerBuild_v{{user `box_version`}}",
+      "boot_wait": "10s",
+      "disk_size": 512000,
+      "fusion_app_path": "/Applications/VMware Fusion.app",
+      "guest_os_type": "centos-64",
+      "output_directory": "packer-centos-{{user `centos_version`}}-x86_64-{{.Provider}}",
+      "iso_checksum": "eb3c8be6ab668e6d83a118323a789e6c",
+      "iso_checksum_type": "md5",
+      "iso_url": "{{user `mirror`}}/6/isos/x86_64/CentOS-{{user `centos_version`}}-x86_64-minimal.iso",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "echo '/sbin/halt -h -p' > shutdown.sh; sudo -S sh 'shutdown.sh'",
+      "tools_upload_flavor": "",
+      "vmx_data": {
+          "cpuid.coresPerSocket": "1",
+          "memsize": "2048",
+          "numvcpus": "1"
+      },
+      "http_directory": "kickstart",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ]
     }
   ],
   "provisioners": [
@@ -119,8 +153,8 @@
   "post-processors": [
     {
       "type": "vagrant",
-      "only": ["virtualbox-iso"],
-      "output": "{{user `box_output_dir`}}/CentOS{{user `centos_version`}}_{{isotime \"20060102\" }}_v{{user `box_version`}}.box"
+      "only": ["virtualbox-iso","vmware-iso"],
+      "output": "{{user `box_output_dir`}}/CentOS{{user `centos_version`}}_{{isotime \"20060102\" }}_{{.Provider}}_v{{user `box_version`}}.box"
     }
   ]
 }
