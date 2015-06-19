@@ -1,0 +1,126 @@
+{
+  "variables": {
+    "centos_version": "6.6",
+    "box_version": "1.0",
+    "mirror": "http://ftp.riken.jp/Linux/centos",
+    "box_output_dir": "../boxes",
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "vm_name": "CentOS{{user `centos_version`}}_PackerBuild_v{{user `box_version`}}",
+      "boot_wait": "10s",
+      "disk_size": 512000,
+      "guest_os_type": "RedHat_64",
+      "iso_checksum": "eb3c8be6ab668e6d83a118323a789e6c",
+      "iso_checksum_type": "md5",
+      "iso_url": "{{user `mirror`}}/6/isos/x86_64/CentOS-{{user `centos_version`}}-x86_64-minimal.iso",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "echo '/sbin/halt -h -p' > shutdown.sh; sudo -S sh 'shutdown.sh'",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "virtualbox_version_file": ".vbox_version",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "2048"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "1"
+        ]
+      ],
+      "http_directory": "kickstart",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ]
+    },
+    {
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `aws_region`}}",
+      "source_ami": "{{user `aws_ami_id`}}",
+      "instance_type": "t2.micro",
+      "iam_instance_profile": "{{user `aws_instance_role`}}",
+      "ssh_username": "root",
+      "ssh_timeout": "5m",
+      "tags" : {
+        "Name" : "Tsuba_AMI"
+      },
+      "vpc_id": "{{user `aws_vpc_id`}}",
+      "subnet_id": "{{user `aws_subnet_id`}}",
+      "ami_name": "CentOS{{user `centos_version`}}_{{isotime \"20060102\" | clean_ami_name }}_v{{user `box_version`}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "chef-solo",
+      "cookbook_paths": ["../cookbooks"],
+      "run_list": [
+        "yum-epel",
+        "awscli",
+        "jq",
+        "python",
+        "adduser",
+        "build-essential",
+        "chef_handler",
+        "cron",
+        "iptables",
+        "logrotate::global",
+        "ntp",
+        "sudo",
+        "selinux::disabled",
+        "timezone",
+        "yum-centos",
+        "yum-update"
+      ],
+      "json": {
+        "platform": "centos",
+        "platform_family": "rhel",
+        "authorization": {
+          "adduser": {
+            "users": [
+              "tsuba-admin"
+            ]
+          },
+          "sudo": {
+            "users": [
+              "tsuba-admin",
+              "vagrant"
+            ],
+            "passwordless": true,
+            "include_sudoers_d": true
+          }
+        }
+      },
+      "prevent_sudo": false,
+      "skip_install": false
+    },
+    {
+      "type": "file",
+      "source": "../serverspec",
+      "destination": "/tmp"
+    },
+    {
+      "type": "shell",
+      "script": "../scripts/serverspec.sh",
+      "execute_command": "sudo -E sh '{{ .Path }}'"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "only": ["virtualbox-iso"],
+      "output": "{{user `box_output_dir`}}/CentOS{{user `centos_version`}}_{{isotime \"20060102\" }}_v{{user `box_version`}}.box"
+    }
+  ]
+}

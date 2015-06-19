@@ -1,0 +1,86 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "aws_region": "",
+    "aws_vpc_id": "",
+    "aws_subnet_id": ""
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "{{user `aws_region`}}",
+    "source_ami": "ami-13614b12",
+    "instance_type": "t2.micro",
+    "iam_instance_profile": "admin",
+    "ssh_username": "root",
+    "ssh_timeout": "5m",
+    "tags" : {
+        "Name" : "CentOS_Image"
+      },
+    "vpc_id": "{{user `aws_vpc_id`}}",
+    "subnet_id": "{{user `aws_subnet_id`}}",
+    "ami_name": "CentOS_Image_{{isotime | clean_ami_name}}"
+  }],
+  "provisioners": [
+     {
+       "type": "chef-solo",
+       "cookbook_paths": ["../cookbooks"],
+       "run_list": [
+         "yum-epel",
+         "yum-centos",
+         "awscli",
+         "jq",
+         "python",
+         "adduser",
+         "build-essential",
+         "chef_handler",
+         "cron",
+         "git",
+         "iptables",
+         "logrotate::global",
+         "ntp",
+         "sudo",
+         "selinux::disabled",
+         "timezone",
+         "yum-update"
+       ],
+       "json": {
+         "platform": "centos",
+         "platform_family": "rhel",
+         "authorization": {
+           "adduser": {
+             "users": [
+               "tsuba-admin"
+             ]
+           },
+           "sudo": {
+             "users": [
+               "tsuba-admin"
+             ],
+             "passwordless": true,
+             "include_sudoers_d": false
+           }
+         }
+       },
+       "prevent_sudo": true,
+       "skip_install": false
+     },
+     {
+       "type": "file",
+       "source": "../serverspec",
+       "destination": "/tmp"
+     },
+     {
+       "type": "shell",
+       "script": "../scripts/serverspec.sh"
+     },
+     {
+       "type": "shell",
+       "inline": [
+         "sudo rm -f /root/.ssh/authorized_keys"
+       ]
+     }
+  ]
+}
