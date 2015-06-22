@@ -83,7 +83,7 @@
       "ssh_port": 22,
       "ssh_wait_timeout": "10000s",
       "shutdown_command": "echo '/sbin/halt -h -p' > shutdown.sh; sudo -S sh 'shutdown.sh'",
-      "tools_upload_flavor": "",
+      "tools_upload_flavor": "linux",
       "vmx_data": {
           "cpuid.coresPerSocket": "1",
           "memsize": "2048",
@@ -146,8 +146,14 @@
     },
     {
       "type": "shell",
-      "script": "../scripts/serverspec.sh",
-      "execute_command": "sudo -E sh '{{ .Path }}'"
+      "scripts": [
+        "../scripts/reboot.sh",
+        "../scripts/vagrant.sh",
+        "../scripts/builder_tools.sh",
+        "../scripts/cleanup.sh",
+        "../scripts/serverspec.sh"
+      ],
+      "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'"
     }
   ],
   "post-processors": [
