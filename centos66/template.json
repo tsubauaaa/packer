@@ -27,6 +27,7 @@
       "ssh_password": "vagrant",
       "ssh_port": 22,
       "ssh_wait_timeout": "10000s",
+      "ssh_pty": true,
       "shutdown_command": "echo '/sbin/halt -h -p' > shutdown.sh; sudo -S sh 'shutdown.sh'",
       "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
       "virtualbox_version_file": ".vbox_version",
@@ -59,6 +60,7 @@
       "iam_instance_profile": "{{user `aws_instance_role`}}",
       "ssh_username": "root",
       "ssh_timeout": "5m",
+      "ssh_pty": true,
       "tags" : {
         "Name" : "Tsuba_AMI"
       },
@@ -82,6 +84,7 @@
       "ssh_password": "vagrant",
       "ssh_port": 22,
       "ssh_wait_timeout": "10000s",
+      "ssh_pty": true,
       "shutdown_command": "echo '/sbin/halt -h -p' > shutdown.sh; sudo -S sh 'shutdown.sh'",
       "tools_upload_flavor": "linux",
       "vmx_data": {
