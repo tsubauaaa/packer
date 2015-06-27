@@ -103,6 +103,7 @@
       "boot_wait": "10s",
       "disk_size": 512000,
       "qemu_binary" : "/usr/libexec/qemu-kvm",
+      "machine_type": "pc",
       "output_directory": "packer-centos-{{user `centos_version`}}-x86_64-{{.Provider}}",
       "iso_checksum": "eb3c8be6ab668e6d83a118323a789e6c",
       "iso_checksum_type": "md5",
