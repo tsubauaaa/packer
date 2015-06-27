@@ -96,6 +96,40 @@
       "boot_command": [
         "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
       ]
+    },
+    {
+      "type": "qemu",
+      "vm_name": "CentOS{{user `centos_version`}}_PackerBuild_v{{user `box_version`}}",
+      "boot_wait": "10s",
+      "disk_size": 512000,
+      "qemu_binary" : "/usr/libexec/qemu-kvm",
+      "output_directory": "packer-centos-{{user `centos_version`}}-x86_64-{{.Provider}}",
+      "iso_checksum": "eb3c8be6ab668e6d83a118323a789e6c",
+      "iso_checksum_type": "md5",
+      "iso_url": "{{user `mirror`}}/6/isos/x86_64/CentOS-{{user `centos_version`}}-x86_64-minimal.iso",
+      "http_port_min": 10082,
+      "http_port_max": 10089,
+      "ssh_host_port_min": 2222,
+      "ssh_host_port_max": 2229,
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "ssh_pty": true,
+      "shutdown_command": "shutdown -P now",
+      "format": "qcow2",
+      "qemuargs": [
+         [ "-m", "2048m" ],
+         ["-machine", "type=pc,accel=kvm"],
+         ["-device", "virtio-net-pci,netdev=user.0"]
+      ],
+      "accelerator": "kvm",
+      "net_device": "virtio-net",
+      "disk_interface": "virtio",
+      "http_directory": "kickstart",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ]
     }
   ],
   "provisioners": [
