@@ -122,6 +122,7 @@
       "format": "qcow2",
       "qemuargs": [
          [ "-m", "2048m" ],
+         [ "-display", "" ],
          [ "-vnc", ":1" ]
       ],
       "accelerator": "kvm",
