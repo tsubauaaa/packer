@@ -123,6 +123,7 @@
       "qemuargs": [
          [ "-m", "2048m" ],
          [ "-display", "" ],
+         [ "-redir", "" ],
          [ "-vnc", ":1" ]
       ],
       "accelerator": "kvm",
