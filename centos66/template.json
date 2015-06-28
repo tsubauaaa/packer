@@ -120,8 +120,7 @@
       "shutdown_command": "shutdown -P now",
       "format": "qcow2",
       "qemuargs": [
-         [ "-m", "2048m" ],
-         [ "-nographics" ]
+         [ "-m", "2048m" ]
       ],
       "accelerator": "kvm",
       "net_device": "virtio-net",
