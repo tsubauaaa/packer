@@ -119,7 +119,7 @@
       "ssh_wait_timeout": "10000s",
       "ssh_pty": true,
       "shutdown_command": "shutdown -P now",
-      "format": "qcow2",
+      "format": "raw",
       "qemuargs": [
          [ "-m", "2048m" ]
       ],
