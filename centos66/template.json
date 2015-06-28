@@ -121,7 +121,8 @@
       "format": "qcow2",
       "qemuargs": [
          [ "-m", "2048m" ],
-         ["-device", "virtio-net-pci,netdev=user.0"]
+         ["-device", "virtio-net-pci,netdev=user.0"],
+         [ "-nographics" ]
       ],
       "accelerator": "kvm",
       "net_device": "virtio-net",
