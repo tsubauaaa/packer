@@ -102,7 +102,7 @@
       "vm_name": "CentOS{{user `centos_version`}}_PackerBuild_v{{user `box_version`}}",
       "boot_wait": "10s",
       "disk_size": 512000,
-      "qemu_binary" : "/usr/libexec/qemu-kvm",
+      "qemu_binary" : "../scripts/fake.sh",
       "machine_type": "pc",
       "headless": true,
       "output_directory": "packer-centos-{{user `centos_version`}}-x86_64-{{.Provider}}",
@@ -121,9 +121,7 @@
       "shutdown_command": "shutdown -P now",
       "format": "qcow2",
       "qemuargs": [
-         [ "-m", "2048m" ],
-         [ "-display", "vnc" ],
-         [ "-vnc", ":1" ]
+         [ "-m", "2048m" ]
       ],
       "accelerator": "kvm",
       "net_device": "virtio-net",
