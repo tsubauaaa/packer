@@ -125,7 +125,6 @@
          ["-device", "virtio-net-pci,netdev=user.0"]
       ],
       "accelerator": "kvm",
-      "net_device": "virtio-net",
       "disk_interface": "virtio",
       "disk_cache": "none",
       "http_directory": "kickstart",
