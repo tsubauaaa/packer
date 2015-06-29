@@ -126,7 +126,6 @@
       ],
       "accelerator": "kvm",
       "disk_interface": "virtio",
-      "disk_cache": "none",
       "http_directory": "kickstart",
       "boot_command": [
         "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
