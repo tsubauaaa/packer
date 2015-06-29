@@ -1,4 +1,4 @@
 #!/bin/bash
 params=$*
-new_params=`echo $params | sed 's/-display none|discard=ignore//g'`
+new_params=`echo $params | sed 's/discard=ignore//g'`
 /usr/libexec/qemu-kvm $new_params

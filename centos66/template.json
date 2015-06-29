@@ -104,8 +104,8 @@
       "disk_size": 512000,
       "qemu_binary" : "../scripts/qemu-kvm",
       "machine_type": "pc",
-      "headless": true,
-      "output_directory": "packer-centos-{{user `centos_version`}}-x86_64-kvm",
+      "headless": false,
+      "output_directory": "packer-centos-{{user `centos_version`}}-x86_64-{{env `PACKER_BUILD_NAME`}}",
       "iso_checksum": "eb3c8be6ab668e6d83a118323a789e6c",
       "iso_checksum_type": "md5",
       "iso_url": "{{user `mirror`}}/6/isos/x86_64/CentOS-{{user `centos_version`}}-x86_64-minimal.iso",
@@ -118,10 +118,11 @@
       "ssh_port": 22,
       "ssh_wait_timeout": "10000s",
       "ssh_pty": true,
-      "shutdown_command": "shutdown -P now",
+      "shutdown_command": "echo '/sbin/halt -h -p' > shutdown.sh; sudo -S sh 'shutdown.sh'",
       "format": "qcow2",
       "qemuargs": [
-         [ "-m", "2048m" ]
+         [ "-m", "2048m" ],
+         ["-device", "virtio-net-pci,netdev=user.0"]
       ],
       "accelerator": "kvm",
       "net_device": "virtio-net",
@@ -197,7 +198,7 @@
   "post-processors": [
     {
       "type": "vagrant",
-      "only": ["virtualbox-iso","vmware-iso"],
+      "only": ["virtualbox-iso","vmware-iso","qemu"],
       "output": "{{user `box_output_dir`}}/CentOS{{user `centos_version`}}_{{isotime \"20060102\" }}_{{.Provider}}_v{{user `box_version`}}.box"
     }
   ]
