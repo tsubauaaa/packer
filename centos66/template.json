@@ -66,7 +66,7 @@
       },
       "vpc_id": "{{user `aws_vpc_id`}}",
       "subnet_id": "{{user `aws_subnet_id`}}",
-      "ami_name": "CentOS{{user `centos_version`}}_{{isotime \"20060102\" | clean_ami_name }}_v{{user `box_version`}}"
+      "ami_name": "CentOS{{user `centos_version`}}_{{isotime \"200601020304\" | clean_ami_name }}_v{{user `box_version`}}"
     },
     {
       "type": "vmware-iso",
@@ -196,7 +196,7 @@
   "post-processors": [
     {
       "type": "vagrant",
-      "only": ["virtualbox-iso","vmware-iso","qemu"],
+      "only": ["virtualbox-iso","vmware-iso","qemu","amazon-ebs"],
       "output": "{{user `box_output_dir`}}/CentOS{{user `centos_version`}}_{{isotime \"20060102\" }}_{{.Provider}}_v{{user `box_version`}}.box"
     }
   ]
