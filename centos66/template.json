@@ -1,5 +1,8 @@
 {
   "variables": {
+    "atlas_token": "{{env `ATLAS_TOKEN`}}",
+    "atlas_user": "",
+    "atlas_name": "",
     "centos_version": "6.6",
     "box_version": "1.0",
     "mirror": "http://ftp.riken.jp/Linux/centos",
