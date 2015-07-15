@@ -1,6 +1,6 @@
 require 'spec_helper'
 
 # timezone
-describe command('date') do
-  its(:stdout) { should match /JST/ }
+describe command('/bin/date') do
+  its(:stdout) { should contain('JST') }
 end

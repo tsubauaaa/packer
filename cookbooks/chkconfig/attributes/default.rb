@@ -1,0 +1,2 @@
+default['chkconfig']['on_services'] = %w{abrt-ccpp abrt-oops abrtd acpid crond irqbalance kdump network ntpd ntpdate rsyslog sshd sysstat }
+default['chkconfig']['off_services'] = %w{atd auditd blk-availability cpuspeed haldaemon ip6tables iptables lvm2-monitor mdmonitor messagebus netconsole netfs postfix psacct quota_nld rdisc restorecond rngd saslauthd smartd svnserve udev-post yum-updateonboot }

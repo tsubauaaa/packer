@@ -1,0 +1,105 @@
+{
+  "variables": {
+    "atlas_token": "{{env `ATLAS_TOKEN`}}",
+    "atlas_user": "",
+    "atlas_name": "",
+    "amazon_version": " 2015.03",
+    "box_version": "1.0",
+    "box_output_dir": "../boxes",
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "aws_region": "",
+    "aws_vpc_id": "",
+    "aws_subnet_id": "",
+    "aws_ami_id": "",
+    "aws_instance_role": ""
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `aws_region`}}",
+      "source_ami": "{{user `aws_ami_id`}}",
+      "instance_type": "t2.micro",
+      "iam_instance_profile": "{{user `aws_instance_role`}}",
+      "ssh_username": "ec2-user",
+      "ssh_timeout": "5m",
+      "ssh_pty": true,
+      "tags" : {
+        "Name" : "Tsuba_AMI"
+      },
+      "vpc_id": "{{user `aws_vpc_id`}}",
+      "subnet_id": "{{user `aws_subnet_id`}}",
+      "ami_name": "Amazon{{user `amazon_version`}}_{{isotime \"200601020304\" | clean_ami_name }}_v{{user `box_version`}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "chef-solo",
+      "cookbook_paths": ["../cookbooks"],
+      "run_list": [
+        "yum-epel",
+        "awscli",
+        "jq",
+        "python",
+        "adduser",
+        "build-essential",
+        "chef_handler",
+        "cron",
+        "iptables",
+        "logrotate::global",
+        "ntp",
+        "sudo",
+        "selinux::disabled",
+        "timezone",
+        "yum-amazon",
+        "chkconfig",
+        "yum-update"
+      ],
+      "json": {
+        "platform": "amazon",
+        "platform_family": "amazon",
+        "authorization": {
+          "adduser": {
+            "users": [
+              "tsuba-admin"
+            ]
+          },
+          "sudo": {
+            "users": [
+              "tsuba-admin"
+            ],
+            "passwordless": true,
+            "include_sudoers_d": true
+          }
+        }
+      },
+      "prevent_sudo": false,
+      "skip_install": false
+    },
+    {
+      "type": "file",
+      "source": "../serverspec",
+      "destination": "/tmp"
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "../scripts/reboot.sh",
+        "../scripts/vagrant.sh",
+        "../scripts/builder_tools.sh",
+        "../scripts/serverspec.sh",
+        "../scripts/cleanup.sh"
+      ],
+      "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "only": ["virtualbox-iso","vmware-iso","qemu","amazon-ebs"],
+      "output": "{{user `box_output_dir`}}/CentOS{{user `centos_version`}}_{{isotime \"20060102\" }}_{{.Provider}}_v{{user `box_version`}}.box"
+    }
+  ]
+}

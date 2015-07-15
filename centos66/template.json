@@ -155,6 +155,7 @@
         "selinux::disabled",
         "timezone",
         "yum-centos",
+        "chkconfig",
         "yum-update"
       ],
       "json": {
@@ -168,8 +169,7 @@
           },
           "sudo": {
             "users": [
-              "tsuba-admin",
-              "vagrant"
+              "tsuba-admin"
             ],
             "passwordless": true,
             "include_sudoers_d": true
