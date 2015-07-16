@@ -11,7 +11,7 @@ node['chkconfig']['on_services'].each do |service|
     code <<-EOC
       /sbin/chkconfig #{service} on
     EOC
-    only_if "/sbin/chkconfig --list | grep #{service} | grep 3:off"
+  only_if "/sbin/chkconfig --list | grep #{service} | grep 3:off"
   end
 end
 
